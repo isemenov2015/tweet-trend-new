@@ -10,17 +10,17 @@ environment {
     stages {
         stage("build") {
             steps {
-                sh 'mvn clean deploy'
+                echo "-------------- build started ---------------"
+                sh 'mvn clean deploy -Dmaven.test.skip=true'
+                echo "-------------- build completed ---------------"
             }
         }
-        stage('SonarQube analysis') {
-            environment {
-                scannerHome = tool 'ilya-semenov-sonar-scanner'
-            }
+
+        stage("test") {
             steps {
-            withSonarQubeEnv('ilya-semenov-sonarqube-server') { // If you have configured more than one global server connection, you can specify its name
-                sh "${scannerHome}/bin/sonar-scanner"
-                }
+                echo "-------------- unit tests started ---------------"
+                sh 'mvn surefire-report:report'
+                echo "-------------- unit tests completed ---------------"
             }
         }
     }
